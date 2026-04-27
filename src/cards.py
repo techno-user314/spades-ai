@@ -1,15 +1,16 @@
-from enum import Enum
 import random
 
 
-class Suits(Enum):
-    HEARTS = 2
-    DIAMONDS = 3
-    CLUBS = 4
-    SPADES = 1
+class Suits:
+    HEARTS = 1
+    DIAMONDS = 2
+    CLUBS = 3
+    SPADES = 4
+
+    list = [HEARTS, DIAMONDS, CLUBS, SPADES]
 
 
-class CardRank(Enum):
+class CardRank:
     TWO = 2
     THREE = 3
     FOUR = 4
@@ -24,6 +25,10 @@ class CardRank(Enum):
     KING = 13
     ACE = 14
 
+    list = [TWO, THREE, FOUR, FIVE,
+            SIX, SEVEN, EIGHT, NINE,
+            TEN, JACK, QUEEN, KING, ACE]
+
 
 class CardException(Exception):
     pass
@@ -31,15 +36,17 @@ class CardException(Exception):
 
 class Card:
     def __init__(self, suit, rank):
-        if suit in Suits and rank in CardRank:
+        if suit in Suits.list and rank in CardRank.list:
             self.suit = suit
             self.rank = rank
         else:
             raise CardException("Suit/rank combination not valid")
 
+
     def _check_card_validity(self, other_obj):
         if not isinstance(other_obj, Card):
             raise CardException("Cannot compare Card with non-Card object")
+
 
     def __gt__(self, other): # >
         self._check_card_validity(other)
@@ -49,6 +56,7 @@ class Card:
             return True
         return False
 
+
     def __lt__(self, other): # <
         self._check_card_validity(other)
         if self.suit == other.suit:
@@ -57,16 +65,19 @@ class Card:
             return True
         return True
 
+
     def __str__(self):
-        return f"{self.rank.name} of {self.suit.name}"
+        return f"{self.rank} of {self.suit}"
 
 
 class CardDeck:
     def __init__(self):
-        self.cards = [Card(suit, rank) for rank in CardRank for suit in Suits]
+        self.cards = [Card(suit, rank) for rank in CardRank.list for suit in Suits.list]
+
 
     def shuffle(self):
         random.shuffle(self.cards)
+
 
     def deal(self, player_count):
         odd_cards = len(self.cards) % player_count
@@ -85,15 +96,20 @@ class Hand:
     def __init__(self):
         self.cards = []
 
+
     def add_card(self, card):
         if not isinstance(card, Card):
             raise TypeError("Cannot add non-Card object to Hand")
         self.cards.append(card)
 
 
+    def play(self, card_num):
+        return self.cards.pop(card_num)
+
+
 if __name__ == '__main__':
     deck = CardDeck()
-    for hand in deck.deal(3):
+    for hand in deck.deal(4):
         for card in hand.cards:
             print(card)
         print("")
